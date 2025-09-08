@@ -4,24 +4,35 @@ plugins {
 }
 
 android {
-    compileSdkVersion 35
+    // MUST match sources so BuildConfig is generated in the right package
+    namespace 'com.hoho.android.usbserial'
+
+    compileSdkVersion 36
 
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 35
         consumerProguardFiles 'proguard-rules.pro'
-        
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunnerArguments = [                    // Raspi   Windows   LinuxVM   ...
-                'rfc2217_server_host': '192.168.0.78',
+        testInstrumentationRunnerArguments = [
+                // Raspi   Windows   LinuxVM   ...
+                'rfc2217_server_host'              : '192.168.0.78',
                 'rfc2217_server_nonstandard_baudrates': 'true',   // true    false     false
         ]
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+
+    // ✅ generate BuildConfig so imports like com.hoho.android.usbserial.BuildConfig resolve
+    buildFeatures {
+        buildConfig true
     }
-    namespace 'com.hoho.android.usbserial'
+
+    // Align with app's toolchain (Java 17)
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
     publishing {
         // if coverage is enabled, change 'release' to 'anyDeviceRelease' or comment out publishing rule
         singleVariant('release') {
@@ -32,12 +43,15 @@ android {
 
 dependencies {
     implementation "androidx.annotation:annotation:1.9.1"
+
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-core:5.15.2'
-    androidTestImplementation 'androidx.appcompat:appcompat:1.6.1' // later versions have minsdk 21
-    androidTestImplementation 'androidx.test:core:1.5.0' // later versions have minsdk 19
-    androidTestImplementation 'androidx.test:runner:1.5.2' // later versions have minsdk 19
-    androidTestImplementation 'commons-net:commons-net:3.9.0' // later versions fail on old Android devices with missing java.time.Duration class
+
+    // keep androidTest deps constrained for low minsdk support
+    androidTestImplementation 'androidx.appcompat:appcompat:1.6.1'  // later versions require minsdk 21
+    androidTestImplementation 'androidx.test:core:1.5.0'            // later versions require minsdk 19
+    androidTestImplementation 'androidx.test:runner:1.5.2'          // later versions require minsdk 19
+    androidTestImplementation 'commons-net:commons-net:3.9.0'       // later versions use java.time.Duration
     androidTestImplementation 'org.apache.commons:commons-lang3:3.14.0'
 }
 
@@ -47,8 +61,7 @@ project.afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-
-                // values used for local maven repo, jitpack uses github release:
+                // values for local maven; JitPack uses GitHub release
                 groupId 'com.github.mik3y'
                 artifactId 'usb-serial-for-android'
                 version '3.8.0beta'

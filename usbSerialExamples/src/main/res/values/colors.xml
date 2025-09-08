@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#949C29</color>
-    <color name="colorPrimaryDark">#61671B</color>
-    <color name="colorAccent">#D8E33B</color>
-
-    <color name="colorRecieveText">#00FF00</color>
-    <color name="colorSendText">#82CAFF</color>
-    <color name="colorStatusText">#FFDB58</color>
+    <color name="state_off_bg">#FFC9D1</color>  <!-- light red container -->
+    <color name="state_off_text">#B00020</color> <!-- red text -->
+    <color name="state_on_bg">#CDE8CE</color>   <!-- light green container -->
+    <color name="state_on_text">#1B5E20</color> <!-- green text -->
+    <color name="danger_red">#D32F2F</color>
 </resources>
